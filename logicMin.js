@@ -19,6 +19,7 @@ function run (input) {
     dontcares.sort().sort(moreOnes); // by number of 1s
     allterms = minterms.concat(dontcares);
     allterms.sort().sort(moreOnes);
+    combine();
     //Print Results
     document.getElementById("response").innerHTML = allterms;
 }
@@ -67,4 +68,41 @@ function ones (x) {
 	}
     }
     return num;
+}
+
+function combine () {
+    var foundone = true;
+    while (foundone) {
+	foundone = false;
+	for (i = 0; i < allterms.length; i++) {
+	    for (j = i + 1; j < allterms.length; j++) {
+		var diff = diffBits(allterms[i], allterms[j]);
+		if (diff == 1) {
+		    addDC(i, j);
+		    foundone = true;
+		}
+	    }
+	}
+    }
+}
+
+function diffBits (x, y) {
+    var diff = 0;
+    for (k = 0; k < x.length; k++) {
+	if (x[k] != y[k]) {
+	    diff++;
+	}
+    }
+    return diff;
+}
+
+// Adds Don't Care bit where two terms intersect
+function addDC (x, y) {
+    for (l = 0; l < allterms[x].length; l++) {
+	if (allterms[x][l] != allterms[y][l]) {
+	    allterms[x] = allterms[x].substr(0,l) + 'X' + allterms[x].substr(l+1);
+	    allterms[y] = allterms[y].substr(0,l) + 'X' + allterms[y].substr(l+1);
+	    return;
+	}
+    }
 }
