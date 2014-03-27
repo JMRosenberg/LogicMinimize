@@ -9,9 +9,14 @@ minterms = [];
 dontcares = [];
 numTerms = 0;
 
-function run () {
+function run (input) {
+    inputStr = input; // Set Input
+    document.getElementById("myinput").value = ''; // Clear Box
     parse();
     toBin();
+
+    //Print Results
+    document.getElementById("response").innerHTML = minterms;
 }
 
 // Parse extracts the minterms and don't cares
@@ -45,5 +50,3 @@ function toBin () {
 	}
     }
 }
-
-run();
