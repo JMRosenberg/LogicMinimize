@@ -7,22 +7,22 @@
 inputStr = "m(1,5,3)+d(2,4)";
 minterms = [];
 dontcares = [];
+numTerms = 0;
 
 // Parse extracts the minterms and don't cares
 // Terms are placed into appropriate arrays
 function parse () {
     var splitStr = inputStr.split("+");
-    var minStr = splitStr[0].substr(1);
+    var minStr = splitStr[0].substr(2, splitStr[0].length - 3);
     var dcStr = "";
+    var max = 0;
+    minterms = minStr.split(",");
     if(splitStr[1] != undefined) {
-	dcStr = splitStr[1].substr(1);
+	dcStr = splitStr[1].substr(2, splitStr[1].length - 3);
+	dontcares = dcStr.split(",");
     }
-    for(i = 1; i < minStr.length; i += 2){
-	minterms.push(parseInt(minStr[i]));
-    }
-    for(i = 1; i < dcStr.length; i += 2){
-	dontcares.push(parseInt(dcStr[i]));
-    }
+    max = Math.max(Math.max.apply(Math, minterms), Math.max.apply(Math, dontcares));
+    numTerms = Math.ceil(Math.log(max+1) / Math.log(2));
 }
 
 parse();
