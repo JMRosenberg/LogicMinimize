@@ -7,6 +7,7 @@
 inputStr = "m(1,5,3)+d(2,4)";
 minterms = [];
 dontcares = [];
+allterms = [];
 numTerms = 0;
 
 function run (input) {
@@ -14,9 +15,12 @@ function run (input) {
     document.getElementById("myinput").value = ''; // Clear Box
     parse();
     toBin();
-
+    minterms.sort().sort(moreOnes); // Sort in ascending,
+    dontcares.sort().sort(moreOnes); // by number of 1s
+    allterms = minterms.concat(dontcares);
+    allterms.sort().sort(moreOnes);
     //Print Results
-    document.getElementById("response").innerHTML = minterms;
+    document.getElementById("response").innerHTML = allterms;
 }
 
 // Parse extracts the minterms and don't cares
@@ -49,4 +53,18 @@ function toBin () {
 	    dontcares[i] = '0' + dontcares[i];
 	}
     }
+}
+
+function moreOnes (a, b) {
+    return ones(a) - ones(b);
+}
+
+function ones (x) {
+    var num = 0;
+    for (i = 0; i < x.length; i++) {
+	if (x[i] == 1) {
+	    num++;
+	}
+    }
+    return num;
 }
