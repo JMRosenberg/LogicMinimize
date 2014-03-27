@@ -9,6 +9,11 @@ minterms = [];
 dontcares = [];
 numTerms = 0;
 
+function run () {
+    parse();
+    toBin();
+}
+
 // Parse extracts the minterms and don't cares
 // Terms are placed into appropriate arrays
 function parse () {
@@ -25,4 +30,20 @@ function parse () {
     numTerms = Math.ceil(Math.log(max+1) / Math.log(2));
 }
 
-parse();
+// ToBin converts minterms to corresponding binary
+function toBin () {
+    for(i = 0; i < minterms.length; i++){
+	minterms[i] = parseInt(minterms[i]).toString(2);
+	while(minterms[i].length < numTerms){
+	    minterms[i] = '0' + minterms[i];
+	}
+    }
+    for(i = 0; i < dontcares.length; i++){
+	dontcares[i] = parseInt(dontcares[i]).toString(2);
+	while(dontcares[i].length < numTerms){
+	    dontcares[i] = '0' + dontcares[i];
+	}
+    }
+}
+
+run();
