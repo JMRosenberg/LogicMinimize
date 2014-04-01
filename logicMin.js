@@ -4,11 +4,14 @@
   For Tufts EE26, created 3-26-14
 */
 
-inputStr = "m(1,5,3)+d(2,4)";
+inputStr = "";
 minterms = [];
 dontcares = [];
 allterms = [];
+tempterms = [];
+combined = [];
 numTerms = 0;
+finalString = "";
 
 function run (input) {
     inputStr = input; // Set Input
@@ -19,9 +22,16 @@ function run (input) {
     dontcares.sort().sort(moreOnes); // by number of 1s
     allterms = minterms.concat(dontcares);
     allterms.sort().sort(moreOnes);
+    combined.push(allterms);
     combine();
-    //Print Results
-    document.getElementById("response").innerHTML = allterms;
+    removeCovered();
+    removeDuplicates();
+    printResults();
+    cleanPrint();
+    document.getElementById("response").innerHTML = finalString;
+    tempterms = [];
+    combined = [];
+    finalString = "";
 }
 
 // Parse extracts the minterms and don't cares
@@ -72,24 +82,28 @@ function ones (x) {
 
 function combine () {
     var foundone = true;
+    var l = 0;
     while (foundone) {
 	foundone = false;
-	for (i = 0; i < allterms.length; i++) {
-	    for (j = i + 1; j < allterms.length; j++) {
-		var diff = diffBits(allterms[i], allterms[j]);
+	for (i = 0; i < combined[l].length; i++) {
+	    for (j = i + 1; j < combined[l].length; j++) {
+		var diff = diffBits(combined[l][i], combined[l][j]);
 		if (diff == 1) {
-		    addDC(i, j);
+		    addDC(i, j, l);
 		    foundone = true;
 		}
 	    }
 	}
+	l++;
+	combined.push(tempterms);
+	tempterms = [];
     }
 }
 
 function diffBits (x, y) {
     var diff = 0;
-    for (k = 0; k < x.length; k++) {
-	if (x[k] != y[k]) {
+    for (b = 0; b < x.length; b++) {
+	if (x[b] != y[b]) {
 	    diff++;
 	}
     }
@@ -97,12 +111,77 @@ function diffBits (x, y) {
 }
 
 // Adds Don't Care bit where two terms intersect
-function addDC (x, y) {
-    for (l = 0; l < allterms[x].length; l++) {
-	if (allterms[x][l] != allterms[y][l]) {
-	    allterms[x] = allterms[x].substr(0,l) + 'X' + allterms[x].substr(l+1);
-	    allterms[y] = allterms[y].substr(0,l) + 'X' + allterms[y].substr(l+1);
+function addDC (x, y, z) {
+    for (l = 0; l < combined[z][x].length; l++) {
+	if (combined[z][x][l] != combined[z][y][l]) {
+	    tempterms.push(combined[z][x].substr(0,l) + 'X' + combined[z][x].substr(l+1));
+	    //allterms[x] = allterms[x].substr(0,l) + 'X' + allterms[x].substr(l+1);
+	    //allterms[y] = allterms[y].substr(0,l) + 'X' + allterms[y].substr(l+1);
 	    return;
+	}
+    }
+}
+
+function removeCovered () {
+    for (i = 0; i < (combined.length - 1); i++) {
+	for (j = 0; j < combined[i].length; j++) {
+	    for (k = 0; k < combined[i+1].length; k++) {
+		if (diffBits(combined[i][j], combined[i+1][k]) == 1) {
+		    if (combined[i+1][k] != undefined) {
+			combined[i][j] = "X";
+		    }
+		}
+	    }
+	}
+    }
+}
+
+function printResults () {
+    notBlank = false;
+    for (cube = 0; cube < combined.length; cube++) {
+	for (term = 0; term < combined[cube].length; term++) {
+	    for (literal = 0; literal < combined[cube][term].length; literal++) {
+		if (combined[cube][term][literal] == '1') {
+		    finalString += String.fromCharCode('A'.charCodeAt(0) + literal);
+		}
+		if (combined[cube][term][literal] == '0') {
+		    finalString += String.fromCharCode('A'.charCodeAt(0) + literal);
+		    //finalString += (parseInt('A') + literal);
+		    finalString += "'";
+		}
+	    }
+	    finalString += "+";
+	}
+    }
+}
+
+function removeDuplicates () {
+    for (cube = 0; cube < combined.length; cube++) {
+	for (term1 = 0; term1 < combined[cube].length; term1++) {
+	    for (term2 = term1 + 1; term2 < combined[cube].length; term2++) {
+		if (combined[cube][term1] == combined[cube][term2]) {
+		    combined[cube][term1] = "X";
+		}
+	    }
+	}
+    }
+}
+
+function cleanPrint () {
+    if (finalString[0] == '+') {
+	finalString = finalString.substr(1);
+	cleanPrint();
+    }
+    if (finalString[finalString.length - 1] == '+') {
+	finalString = finalString.substr(0, finalString.length - 1);
+	cleanPrint();
+    }
+    for (character = 0; character < finalString.length - 1; character++) {
+	if (finalString[character] == '+') {
+	    if (finalString[character+1] == '+') {
+		finalString = (finalString.substr(0, character) + finalString.substr(character + 1));
+		cleanPrint();
+	    }
 	}
     }
 }
