@@ -6,6 +6,7 @@
 
 inputStr = "";
 minterms = [];
+maxterms = [];
 dontcares = [];
 allterms = [];
 tempterms = [];
@@ -17,6 +18,7 @@ function run (input) {
     inputStr = input; // Set Input
     document.getElementById("myinput").value = ''; // Clear Box
     parse();
+    setPOS();
     toBin();
     minterms.sort().sort(moreOnes); // Sort in ascending,
     dontcares.sort().sort(moreOnes); // by number of 1s
@@ -35,9 +37,12 @@ function run (input) {
     document.getElementById("responseSOP").innerHTML = finalString;
     tempterms = [];
     combined = [];
-    finalString = "";
+    finalString = "=";
     //DO AGAIN
-    invertAll(); //-----------------------
+    //invertAll(); //-----------------------
+    allterms = maxterms.concat(dontcares);
+    allterms.sort().sort(moreOnes);
+    combined.push(allterms);
     combine();
     removeCovered();
     removeDuplicates();
@@ -45,10 +50,15 @@ function run (input) {
     printResultsPOS(); //-----------------
     cleanPrintPOS(); //-------------------
     document.getElementById("responsePOS").innerHTML = finalString;
+    inputStr = "";
+    minterms = [];
+    maxterms = [];
+    dontcares = [];
+    allterms = [];
     tempterms = [];
     combined = [];
-    finalString = "";
     numTerms = 0;
+    finalString = "";
 }
 
 // Parse extracts the minterms and don't cares
@@ -67,6 +77,18 @@ function parse () {
     numTerms = Math.ceil(Math.log(max+1) / Math.log(2));
 }
 
+function setPOS () {
+    for (termNum = 0; termNum < Math.pow(2, numTerms); termNum++) {
+	if (minterms.indexOf(termNum.toString()) > -1) {
+	    continue;
+	}
+	if (dontcares.indexOf(termNum.toString()) > -1) {
+	    continue;
+	}
+	maxterms.push(termNum);
+    }
+}
+
 // ToBin converts minterms to corresponding binary
 function toBin () {
     for(i = 0; i < minterms.length; i++){
@@ -79,6 +101,12 @@ function toBin () {
 	dontcares[i] = parseInt(dontcares[i]).toString(2);
 	while(dontcares[i].length < numTerms){
 	    dontcares[i] = '0' + dontcares[i];
+	}
+    }
+    for(i = 0; i < maxterms.length; i++){
+	maxterms[i] = parseInt(maxterms[i]).toString(2);
+	while(maxterms[i].length < numTerms){
+	    maxterms[i] = '0' + maxterms[i];
 	}
     }
 }
@@ -182,11 +210,10 @@ function printResultsPOS () {
 		}
 		if (combined[cube][term][literal] == '1') {
 		    finalString += String.fromCharCode('A'.charCodeAt(0) + literal);
+		    finalString += "'";
 		}
 		if (combined[cube][term][literal] == '0') {
 		    finalString += String.fromCharCode('A'.charCodeAt(0) + literal);
-		    //finalString += (parseInt('A') + literal);
-		    finalString += "'";
 		}
 	    }
 	    finalString += ')';
@@ -226,7 +253,38 @@ function cleanPrint () {
 }
 
 function cleanPrintPOS () {
-    return;
+    for (character = 0; character < finalString.length - 1; character++) {
+	if (finalString[character] == '+') {
+	    if (finalString[character+1] == ')') {
+		finalString = (finalString.substr(0, character) + finalString.substr(character + 1));
+		cleanPrintPOS();
+	    }
+	}
+    }
+    for (character = 0; character < finalString.length - 1; character++) {
+	if (finalString[character] == '(') {
+	    if (finalString[character+1] == ')') {
+		finalString = (finalString.substr(0, character) + finalString.substr(character + 2));
+		cleanPrintPOS();
+	    }
+	}
+    }
+    for (character = 0; character < finalString.length - 1; character++) {
+	if (finalString[character] == '+') {
+	    if (finalString[character+1] == '+') {
+		finalString = (finalString.substr(0, character) + finalString.substr(character + 1));
+		cleanPrintPOS();
+	    }
+	}
+    }
+    for (character = 0; character < finalString.length - 1; character++) {
+	if (finalString[character] == '(') {
+	    if (finalString[character+1] == '+') {
+		finalString = (finalString.substr(0, character + 1) + finalString.substr(character + 2));
+		cleanPrintPOS();
+	    }
+	}
+    }
 }
 
 function invertAll () {
