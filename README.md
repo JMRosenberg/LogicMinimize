@@ -49,4 +49,4 @@ Software tool for generating minimized 2-level SOP (Sum of Products) and POS (Pr
 
     =B'C+A'C
 
-    =C(A'B')
+    =C(A'+B')
