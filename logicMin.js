@@ -23,15 +23,32 @@ function run (input) {
     allterms = minterms.concat(dontcares);
     allterms.sort().sort(moreOnes);
     combined.push(allterms);
+    //START
     combine();
     removeCovered();
     removeDuplicates();
+    //END
     printResults();
     cleanPrint();
-    document.getElementById("response").innerHTML = finalString;
+    finalString = ('=' + finalString);
+    document.getElementById("orig").innerHTML = inputStr;
+    document.getElementById("responseSOP").innerHTML = finalString;
     tempterms = [];
     combined = [];
     finalString = "";
+    //DO AGAIN
+    invertAll(); //-----------------------
+    combine();
+    removeCovered();
+    removeDuplicates();
+    //END
+    printResultsPOS(); //-----------------
+    cleanPrintPOS(); //-------------------
+    document.getElementById("responsePOS").innerHTML = finalString;
+    tempterms = [];
+    combined = [];
+    finalString = "";
+    numTerms = 0;
 }
 
 // Parse extracts the minterms and don't cares
@@ -184,4 +201,22 @@ function cleanPrint () {
 	    }
 	}
     }
+}
+
+function invertAll () {
+    for (inv1 = 0; inv1 < minterms.length; inv1++) {
+	invertStr = "";
+	for (inv2 = 0; inv2 < minterms[inv1].length; inv2++) {
+	    if (minterms[inv1][inv2] == '1') {
+		invertStr += '0';
+	    }
+	    if (minterms[inv1][inv2] == 0) {
+		invertStr += '1';
+	    }
+	}
+	minterms[inv1] = invertStr;
+    }
+    allterms = minterms.concat(dontcares);
+    allterms.sort().sort(moreOnes);
+    combined.push(allterms);
 }
