@@ -172,6 +172,28 @@ function printResults () {
     }
 }
 
+function printResultsPOS () {
+    for (cube = 0; cube < combined.length; cube++) {
+	for (term = 0; term < combined[cube].length; term++) {
+	    finalString += '('
+	    for (literal = 0; literal < combined[cube][term].length; literal++) {
+		if (literal != 0) {
+		    finalString += '+';
+		}
+		if (combined[cube][term][literal] == '1') {
+		    finalString += String.fromCharCode('A'.charCodeAt(0) + literal);
+		}
+		if (combined[cube][term][literal] == '0') {
+		    finalString += String.fromCharCode('A'.charCodeAt(0) + literal);
+		    //finalString += (parseInt('A') + literal);
+		    finalString += "'";
+		}
+	    }
+	    finalString += ')';
+	}
+    }    
+}
+
 function removeDuplicates () {
     for (cube = 0; cube < combined.length; cube++) {
 	for (term1 = 0; term1 < combined[cube].length; term1++) {
@@ -201,6 +223,10 @@ function cleanPrint () {
 	    }
 	}
     }
+}
+
+function cleanPrintPOS () {
+    return;
 }
 
 function invertAll () {
