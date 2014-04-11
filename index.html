@@ -10,15 +10,18 @@
   <body>
     <div>
       Direct Input:
-      <input type="text" id="myinput" onchange="run(this.value)" autofocus="autofocus"></input>
+      <input type="text" id="myinput" onchange="directrun(this.value)" autofocus="autofocus"></input>
       
-      <p><em>Example:</em> <pre>m(1,2,3)+d(4,5,6)</pre> for minterms 1, 2, and 3, and don't-cares 4, 5, and 6<p>
+      <p><em>Example:</em> <pre>m(0,2)+d(1)</pre> for minterms 0 and 2, and don't-care of 1<p>
     </div>
     
-    <div><h3>Results: <span id="orig"></span></h3>
-      <p id="responseSOP">No input yet!</p>
-      <p id="responsePOS">No input yet!</p></div>
+    <div><table><tr><th>Input Function</th><th>SOP Result</th><th>POS Result</th></tr>
+	<tr><td id="orig"></td><td id="responseSOP"></td><td id="responsePOS"></td></tr>
+      </table>
+    </div>
     
-    <div><em>Note:</em> File input is not currently supported by most browsers.  Also, due to a bug in the PI table, some functions will not be minimal, and will contain one extra term.</div>
+    <div>File Input: <input type="file" id="fileInput" onchange="filerun()"></div>
+    
+    <div><em>Note:</em> File input is only supported in Chrome.  Also, due to a bug in the PI table, some functions will not be minimal, and will contain one or two extra terms.</div>
   </body>
 </html>

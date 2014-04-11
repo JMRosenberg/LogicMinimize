@@ -14,9 +14,37 @@ combined = [];
 numTerms = 0;
 finalString = "";
 
+function filerun () {
+    var fileInput = document.getElementById('fileInput');
+    var file = fileInput.files[0];
+    var reader = new FileReader();
+    document.getElementById("orig").innerHTML = '';
+    document.getElementById("responseSOP").innerHTML = '';
+    document.getElementById("responsePOS").innerHTML = '';
+    reader.onload = function (e) {
+	var fileArr = reader.result.split("\n");
+	for (fileNum = 0; fileNum < fileArr.length; fileNum++) {
+	    if (fileArr[fileNum][0] == "m") {
+		run(fileArr[fileNum]);
+	    }
+	}
+    }
+    reader.readAsText(file);
+}
+
+function directrun (input) {
+    document.getElementById("orig").innerHTML = '';
+    document.getElementById("responseSOP").innerHTML = '';
+    document.getElementById("responsePOS").innerHTML = '';
+    run (input);
+}
+
 function run (input) {
     inputStr = input; // Set Input
     document.getElementById("myinput").value = ''; // Clear Box
+
+//================================================================================
+
     parse();
     setPOS();
     toBin();
@@ -34,13 +62,12 @@ function run (input) {
     printResults();
     cleanPrint();
     finalString = ('=' + finalString);
-    document.getElementById("orig").innerHTML = inputStr;
-    document.getElementById("responseSOP").innerHTML = finalString;
+    document.getElementById("orig").innerHTML += "</br>" + inputStr;
+    document.getElementById("responseSOP").innerHTML += "</br>" + finalString;
     tempterms = [];
     combined = [];
     finalString = "=";
     //DO AGAIN
-    //invertAll(); //-----------------------
     allterms = maxterms.concat(dontcares);
     allterms.sort().sort(moreOnes);
     combined.push(allterms);
@@ -48,9 +75,9 @@ function run (input) {
     removeCovered();
     removeDuplicates();
     //END
-    printResultsPOS(); //-----------------
-    cleanPrintPOS(); //-------------------
-    document.getElementById("responsePOS").innerHTML = finalString;
+    printResultsPOS();
+    cleanPrintPOS();
+    document.getElementById("responsePOS").innerHTML += "</br>" + finalString;
     inputStr = "";
     minterms = [];
     maxterms = [];
@@ -60,6 +87,8 @@ function run (input) {
     combined = [];
     numTerms = 0;
     finalString = "";
+
+//===============================================================================
 }
 
 // Parse extracts the minterms and don't cares

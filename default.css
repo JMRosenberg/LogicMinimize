@@ -9,3 +9,12 @@ div {
     border-width: 1px;
     border-radius: 5px;
 }
+
+table {
+    width: 98%;
+    text-align: center;
+}
+
+td {
+    width: 33%;
+}
