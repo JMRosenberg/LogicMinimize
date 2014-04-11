@@ -28,6 +28,7 @@ function run (input) {
     //START
     combine();
     removeCovered();
+    removeExtras();
     removeDuplicates();
     //END
     printResults();
@@ -160,8 +161,6 @@ function addDC (x, y, z) {
     for (l = 0; l < combined[z][x].length; l++) {
 	if (combined[z][x][l] != combined[z][y][l]) {
 	    tempterms.push(combined[z][x].substr(0,l) + 'X' + combined[z][x].substr(l+1));
-	    //allterms[x] = allterms[x].substr(0,l) + 'X' + allterms[x].substr(l+1);
-	    //allterms[y] = allterms[y].substr(0,l) + 'X' + allterms[y].substr(l+1);
 	    return;
 	}
     }
@@ -191,7 +190,6 @@ function printResults () {
 		}
 		if (combined[cube][term][literal] == '0') {
 		    finalString += String.fromCharCode('A'.charCodeAt(0) + literal);
-		    //finalString += (parseInt('A') + literal);
 		    finalString += "'";
 		}
 	    }
@@ -303,4 +301,40 @@ function invertAll () {
     allterms = minterms.concat(dontcares);
     allterms.sort().sort(moreOnes);
     combined.push(allterms);
+}
+
+function removeExtras () {
+    mintemp = minterms;
+    needed = [];
+    for (mterm = 0; mterm < mintemp.length; mterm++) {
+	for (chk1 = combined.length-1; chk1 >= 0; chk1--) {
+	    for (chk2 = combined[chk1].length-1; chk2 >= 0; chk2--) {
+		if (allXs(combined[chk1][chk2])) {
+		    continue;
+		}
+		checked = true;
+		for (chk3 = 0; chk3 < combined[chk1][chk2].length; chk3++) {
+		    if (combined[chk1][chk2][chk3] != 'X') {
+			if (combined[chk1][chk2][chk3] != mintemp[mterm][chk3]) {
+			    checked = false;
+			}
+		    }
+		}
+		if (checked) {
+		    mintemp[mterm] = '2'
+		    needed.push(combined[chk1][chk2]);
+		}
+	    }
+	}
+    }
+    combined = [needed];
+}
+
+function allXs (term) {
+    for (ax1 = 0; ax1 < term.length; ax1++) {
+	if (term[ax1] != 'X') {
+	    return false;
+	}
+    }
+    return true;
 }
